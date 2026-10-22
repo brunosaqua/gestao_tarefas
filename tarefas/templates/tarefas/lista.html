@@ -43,6 +43,16 @@
                             </div>
 
                             <div class="info">
+                                Categoria: {{ tarefa.categoria.nome }}
+                            </div>
+
+                            {% if tarefa.data_prevista %}
+                            <div class="info">
+                                Data prevista: {{ tarefa.data_prevista|date:"d/m/Y" }}
+                            </div>
+                            {% endif %}
+
+                            <div class="info">
                                 Situação:
                                 <span class="situacao">
                                     {{ tarefa.situacao }}

@@ -1,18 +1,5 @@
 from django.shortcuts import render, redirect
-
-
-tarefas = [
-    {
-        "titulo": "Estudar Django",
-        "prioridade": "Alta",
-        "situacao": "Pendente",
-    },
-    {
-        "titulo": "Criar página HTML",
-        "prioridade": "Média",
-        "situacao": "Concluída",
-    },
-]
+from .models import Categoria, Tarefa
 
 
 def inicio(request):
@@ -20,28 +7,35 @@ def inicio(request):
 
 
 def lista_tarefas(request):
-    return render(
-        request,
-        "tarefas/lista.html",
-        {"tarefas": tarefas}
-    )
+    tarefas = Tarefa.objects.select_related("categoria").all().order_by("data_prevista", "titulo")
+    return render(request, "tarefas/lista.html", {"tarefas": tarefas})
 
 
 def cadastrar_tarefa(request):
+    categorias = Categoria.objects.all().order_by("nome")
 
     if request.method == "POST":
+        titulo = request.POST.get("titulo", "").strip()
+        descricao = request.POST.get("descricao", "").strip()
+        prioridade = request.POST.get("prioridade", Tarefa.Prioridade.MEDIA)
+        situacao = request.POST.get("situacao", Tarefa.Situacao.PENDENTE)
+        categoria_id = request.POST.get("categoria")
+        data_prevista = request.POST.get("data_prevista") or None
 
-        titulo = request.POST.get("titulo")
-        prioridade = request.POST.get("prioridade")
-        situacao = request.POST.get("situacao")
+        if titulo and categoria_id:
+            Tarefa.objects.create(
+                titulo=titulo,
+                descricao=descricao,
+                prioridade=prioridade,
+                situacao=situacao,
+                categoria_id=categoria_id,
+                data_prevista=data_prevista,
+            )
+            return redirect("lista_tarefas")
 
-        if titulo:
-            tarefas.append({
-                "titulo": titulo,
-                "prioridade": prioridade,
-                "situacao": situacao,
-            })
+        return render(request, "tarefas/cadastrar.html", {
+            "categorias": categorias,
+            "erro": "Informe o título e selecione uma categoria.",
+        })
 
-        return redirect("lista_tarefas")
-
-    return render(request, "tarefas/cadastrar.html")
+    return render(request, "tarefas/cadastrar.html", {"categorias": categorias})

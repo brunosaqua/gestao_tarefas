@@ -32,20 +32,36 @@
                 required
             >
 
+            <label>Descrição</label>
+            <textarea name="descricao" placeholder="Descreva a tarefa"></textarea>
+
+            <label>Data prevista</label>
+            <input type="date" name="data_prevista">
+
+            <label>Categoria</label>
+            <select name="categoria" required>
+                <option value="">Selecione uma categoria</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}">{{ categoria.nome }}</option>
+                {% endfor %}
+            </select>
+
+            {% if erro %}<p>{{ erro }}</p>{% endif %}
+
             <label>Prioridade</label>
 
             <select name="prioridade">
-                <option value="Baixa">Baixa</option>
-                <option value="Média" selected>Média</option>
-                <option value="Alta">Alta</option>
+                <option value="BAIXA">Baixa</option>
+                <option value="MEDIA" selected>Média</option>
+                <option value="ALTA">Alta</option>
             </select>
 
             <label>Situação</label>
 
             <select name="situacao">
-                <option value="Pendente">Pendente</option>
-                <option value="Em andamento">Em andamento</option>
-                <option value="Concluída">Concluída</option>
+                <option value="PENDENTE">Pendente</option>
+                <option value="EM_ANDAMENTO">Em andamento</option>
+                <option value="CONCLUIDA">Concluída</option>
             </select>
 
             <button type="submit">
